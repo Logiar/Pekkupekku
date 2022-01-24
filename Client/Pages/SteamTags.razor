@@ -1,0 +1,38 @@
+@page "/SteamTags"
+@using Pekkupekku.Shared
+@inject HttpClient _http
+<PageTitle>Steam Tags</PageTitle>
+<h3>Steam Tags</h3>
+
+@if (tagsResult == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var tag in tagsResult.Tags)
+            {
+                <tr>
+                    <td>@tag.Id</td>
+                    <td>@tag.Name</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@code {
+    private TagsResult? tagsResult;
+
+    protected override async Task OnInitializedAsync()
+    {
+        tagsResult = await _http.GetFromJsonAsync<TagsResult>("SteamApi/tags");
+    }
+}
