@@ -6,7 +6,14 @@
 
 @if (tagsResult == null)
 {
-    <p><em>Loading...</em></p>
+    if (reasonPhrase == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <p><strong>@reasonPhrase:</strong> This may be caused by Steam not responding.</p>
+    }
 }
 else
 {
@@ -30,9 +37,19 @@ else
 }
 @code {
     private TagsResult? tagsResult;
+    private string? reasonPhrase;
 
     protected override async Task OnInitializedAsync()
     {
-        tagsResult = await _http.GetFromJsonAsync<TagsResult>("SteamApi/tags");
+
+        var response = await _http.GetAsync("SteamApi/tags");
+        if (response.IsSuccessStatusCode)
+        {
+            tagsResult = await response.Content.ReadFromJsonAsync<TagsResult>();
+        }
+        else
+        {
+            reasonPhrase = response.ReasonPhrase;
+        }
     }
 }
