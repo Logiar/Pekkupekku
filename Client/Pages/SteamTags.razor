@@ -1,18 +1,18 @@
 @page "/SteamTags"
-@using Pekkupekku.Shared
+@using Pekkupekku.Shared.Steam
 @inject HttpClient _http
 <PageTitle>Steam Tags</PageTitle>
 <h3>Steam Tags</h3>
 
-@if (tagsResult == null)
+@if (_tagsResult == null)
 {
-    if (reasonPhrase == null)
+    if (_reasonPhrase == null)
     {
         <p><em>Loading...</em></p>
     }
     else
     {
-        <p><strong>@reasonPhrase:</strong> This may be caused by Steam not responding.</p>
+        <p><strong>@_reasonPhrase:</strong> This may be caused by Steam not responding.</p>
     }
 }
 else
@@ -25,7 +25,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var tag in tagsResult.Tags)
+            @foreach (var tag in _tagsResult.Tags)
             {
                 <tr>
                     <td>@tag.Id</td>
@@ -36,8 +36,8 @@ else
     </table>
 }
 @code {
-    private TagsResult? tagsResult;
-    private string? reasonPhrase;
+    private TagsResult? _tagsResult;
+    private string? _reasonPhrase;
 
     protected override async Task OnInitializedAsync()
     {
@@ -45,11 +45,11 @@ else
         var response = await _http.GetAsync("SteamApi/tags");
         if (response.IsSuccessStatusCode)
         {
-            tagsResult = await response.Content.ReadFromJsonAsync<TagsResult>();
+            _tagsResult = await response.Content.ReadFromJsonAsync<TagsResult>();
         }
         else
         {
-            reasonPhrase = response.ReasonPhrase;
+            _reasonPhrase = response.ReasonPhrase;
         }
     }
 }

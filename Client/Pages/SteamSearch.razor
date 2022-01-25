@@ -1,0 +1,75 @@
+@page "/SteamSearch"
+@using Pekkupekku.Shared.Steam
+@using System.Web
+@inject HttpClient _http
+<h3>Steam Search</h3>
+<div class="text-center bg-blue-100">
+    <form @onsubmit="SearchStore">
+        <input class="border-4 w-1/3 rounded m-6 p-6 h-8 border-blue-300" @bind-value="_searchText" placeholder="Search by title"/>
+        <button>Search</button>
+    </form>
+</div>
+
+@if (_searchResult == null)
+{
+    if (_reasonPhrase == null)
+    {
+        <p><em>Enter a search phrase and click search</em></p>
+    }
+    else
+    {
+        <p><strong>@_reasonPhrase</strong></p>
+    }
+}
+else if (_searchResult.Total == 0)
+{
+    <p>No result.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Type</th>
+            <th>Image</th>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Metascore</th>
+            <th>Controller Support</th>
+        </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in _searchResult.Items)
+            {
+                <SearchResultItem Item="@item"/>
+            }
+        </tbody>
+    </table>
+}
+@code {
+    private string? _searchText;
+    private SearchResult? _searchResult;
+    private string? _reasonPhrase;
+
+    private async void SearchStore()
+    {
+        if (string.IsNullOrWhiteSpace(_searchText))
+        {
+            _reasonPhrase = "Can't do empty searches.";
+            StateHasChanged();
+            return;
+        }
+        var response = await _http.GetAsync($"SteamApi/search?query={HttpUtility.UrlEncode(_searchText)}");
+        if (response.IsSuccessStatusCode)
+        {
+            _searchResult = await response.Content.ReadFromJsonAsync<SearchResult>();
+            _reasonPhrase = null;
+        }
+        else
+        {
+            _reasonPhrase = response.ReasonPhrase;
+        }
+        StateHasChanged();
+    }
+}

@@ -4,11 +4,17 @@ using Pekkupekku.Server;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddHttpClient("SteamStoreApi", client =>
+builder.Services.AddHttpClient(SteamApiType.Store, client =>
 {
     client.BaseAddress = new Uri("https://store.steampowered.com/");
     client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 });
+builder.Services.AddHttpClient(SteamApiType.Community, client =>
+{
+    client.BaseAddress = new Uri("https://steamcommunity.com/");
+    client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+});
+
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();

@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Pekkupekku.Shared;
+namespace Pekkupekku.Shared.Steam;
 
 public class TagsResult
 {

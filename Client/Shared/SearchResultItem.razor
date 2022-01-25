@@ -1,0 +1,31 @@
+@using Pekkupekku.Shared.Steam
+<tr>
+    @if (Item != null)
+    {
+        <td>@Item.Type</td>
+        <td><img src="@Item.TinyImage" alt="Image for @Item.Name"/></td>
+        <td>@Item.Id</td>
+        <td>@Item.Name</td>
+        @if (Item.Price == null)
+        {
+            <td>Free?</td>
+        }
+        else
+        {
+            <td>
+                @((decimal) Item.Price.Final / 100) @Item.Price.Currency
+                @if (Item.Price.Final != Item.Price.Initial)
+                {
+                    @($"{(Item.Price.Final / Item.Price.Initial)}% off!")
+                }
+            </td>
+        }
+        <td>@Item.Metascore</td>
+        <td>@Item.ControllerSupport</td>
+    }
+</tr>
+@code
+{
+    [Parameter]
+    public SearchItem? Item { get; set; }
+}
