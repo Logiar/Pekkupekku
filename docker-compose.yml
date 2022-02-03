@@ -1,0 +1,34 @@
+version: '3.4'
+services:
+  app:
+    build:
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - appnetwork
+    depends_on:
+      - sqlserver
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server
+    container_name: MsSqlServer
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Password_01
+    ports:
+      - "1433:1433"
+    networks:
+      - appnetwork
+    healthcheck:
+      test: /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$${SA_PASSWORD}" -Q "SELECT 1" -b -o /dev/null
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+networks:
+  appnetwork:
+    driver: bridge
