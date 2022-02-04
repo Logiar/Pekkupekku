@@ -43,12 +43,13 @@ public class SteamApiController : ControllerBase
     public async Task<IActionResult> SteamStoreSearch(string query)
     {
         // This only proxies the request because of CORS
-        var result = await _store.GetFromJsonAsync<SearchResult>($"api/storesearch/?l=english&cc=NO&term={HttpUtility.UrlEncode(query)}");
-        if (result == null)
+        var result = await _store.GetAsync($"api/storesearch/?l=english&cc=NO&term={HttpUtility.UrlEncode(query)}");
+        if (!result.IsSuccessStatusCode)
         {
             _logger.LogWarning("Search for '{Query}' failed", query);
             return Problem("Search failed.");
         }
-        return Ok(result);
+        var jsonString = await result.Content.ReadAsStringAsync();
+        return Ok(jsonString);
     }
 }
