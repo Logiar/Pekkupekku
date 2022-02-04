@@ -1,6 +1,6 @@
 @page "/SteamTags"
 @using Pekkupekku.Shared.Steam
-@inject HttpClient _http
+@inject HttpClient Http
 <PageTitle>Steam Tags</PageTitle>
 <h3>Steam Tags</h3>
 
@@ -42,7 +42,7 @@ else
     protected override async Task OnInitializedAsync()
     {
 
-        var response = await _http.GetAsync("SteamApi/tags");
+        var response = await Http.GetAsync("SteamApi/tags");
         if (response.IsSuccessStatusCode)
         {
             _tagsResult = await response.Content.ReadFromJsonAsync<TagsResult>();
