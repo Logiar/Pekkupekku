@@ -1,0 +1,46 @@
+@page "/SteamApp/{Id:int}"
+@using System.Text.Json
+@inject HttpClient Http
+
+@if (_appResult == null)
+{
+    if (_reasonPhrase == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <p><strong>@_reasonPhrase:</strong> This may be caused by Steam not responding.</p>
+    }
+}
+else
+{
+    <h3>@DataElement?.GetProperty("name").GetString()</h3>
+    <p>Type: @DataElement?.GetProperty("type").GetString()</p>
+    <p>@((MarkupString)(DataElement?.GetProperty("about_the_game").GetString() ?? ""))</p>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private JsonDocument? _appResult;
+
+    private JsonElement? DataElement => _appResult?.RootElement.GetProperty(Id.ToString()).GetProperty("data");
+
+    private string? _reasonPhrase;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        var response = await Http.GetAsync($"SteamApi/app/{Id}");
+        if (response.IsSuccessStatusCode)
+        {
+            var jsonStream = await response.Content.ReadAsStreamAsync();
+            _appResult = await JsonDocument.ParseAsync(jsonStream);
+        }
+        else
+        {
+            _reasonPhrase = response.ReasonPhrase;
+        }
+    }
+}

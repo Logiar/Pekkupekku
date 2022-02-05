@@ -52,4 +52,20 @@ public class SteamApiController : ControllerBase
         var jsonString = await result.Content.ReadAsStringAsync();
         return Ok(jsonString);
     }
+
+    [HttpGet("app/{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesDefaultResponseType]
+    public async Task<IActionResult> SteamGameInfo(int id)
+    {
+        var result = await _store.GetAsync($"api/appdetails/?appids={id}");
+        if (!result.IsSuccessStatusCode)
+        {
+            _logger.LogWarning("Problem finding steam app with id {Id}", id);
+            return Problem("Could not locate game.");
+        }
+        var jsonString = await result.Content.ReadAsStringAsync();
+        return Ok(jsonString);
+    }
 }

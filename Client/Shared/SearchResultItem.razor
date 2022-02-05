@@ -5,7 +5,7 @@
         <td>@Item.Type</td>
         <td><img src="@Item.TinyImage" alt="Image for @Item.Name"/></td>
         <td>@Item.Id</td>
-        <td>@Item.Name</td>
+        <td><a href="SteamApp/@Item.Id">@Item.Name</a></td>
         @if (Item.Price == null)
         {
             <td>Free?</td>
